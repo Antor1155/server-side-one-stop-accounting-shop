@@ -5,7 +5,7 @@ const { Resend } = require('resend');
 // for firebase upload only 
 const functions = require('firebase-functions');
 
-const resend = new Resend('re_CH2fsfpz_Hwc5FBhZFK9ALSZUaSXxY5dX');
+const resend = new Resend(functions.config().resend.key);
 
 const app = express()
 
