@@ -2,12 +2,15 @@ const express = require("express")
 const cors = require("cors")
 const { Resend } = require('resend');
 
+// for firebase upload only 
+const functions = require('firebase-functions');
+
 const resend = new Resend('re_CH2fsfpz_Hwc5FBhZFK9ALSZUaSXxY5dX');
 
 const app = express()
 
 //delete this for firebase
-const port = process.env.PORT || 5000;
+// const port = process.env.PORT || 5000;
 
 app.use(express.json())
 app.use(cors())
@@ -19,8 +22,6 @@ app.post("/formdata/:section", (req, res) => {
         const section = req.params.section
 
         const data = req.body;
-
-        console.log(section)
 
         if (section === "indexbig") {
             resend.emails.send({
@@ -75,7 +76,10 @@ app.post("/formdata/:section", (req, res) => {
 
 })
 
+// this part for node.js 
+// app.listen(port, () => {
+//     console.log("server is runnign on port", port)
+// })
 
-app.listen(port, () => {
-    console.log("server is runnign on port", port)
-})
+// this part is for firebase
+exports.app = functions.https.onRequest(app)
