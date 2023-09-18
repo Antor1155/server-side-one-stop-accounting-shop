@@ -26,7 +26,7 @@ app.post("/formdata/:section", (req, res) => {
         if (section === "indexbig") {
             resend.emails.send({
                 from: "OSAS email funnel <email@onestopaccountingshop.com>",
-                to: ["antor@socialengagementgroup.com"],
+                to: ["Info@onestopaccountingshop.com"],
                 subject: "Requested meeting",
                 html: `<strong> Email funnel to meeting request<strong>
                         <p> Email: ${data.email} </p>
@@ -42,7 +42,7 @@ app.post("/formdata/:section", (req, res) => {
         } else if (section === "subscription") {
             resend.emails.send({
                 from: "OSAS email funnel <email@onestopaccountingshop.com>",
-                to: ["antor@socialengagementgroup.com"],
+                to: ["Info@onestopaccountingshop.com"],
                 subject: "Email subscription",
                 html: `<strong> email subscription<strong>
                         <p> Email: ${data.email} </p>
@@ -55,7 +55,7 @@ app.post("/formdata/:section", (req, res) => {
         } else if (section === "cform") {
             resend.emails.send({
                 from: "OSAS email funnel <email@onestopaccountingshop.com>",
-                to: ["antor@socialengagementgroup.com"],
+                to: ["Info@onestopaccountingshop.com"],
                 subject: "Contact Email",
                 html: `<strong>Contact email<strong>
                     <p> Email: ${data.email} </p>
