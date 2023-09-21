@@ -1,11 +1,13 @@
 const express = require("express")
 const cors = require("cors")
 const { Resend } = require('resend');
+const resend = new Resend(functions.config().resend.key);
 
-// for firebase upload only 
+// for firebase-function upload only 
 const functions = require('firebase-functions');
 
-const resend = new Resend(functions.config().resend.key);
+const { GoogleSpreadsheet } = require("google-spreadsheet")
+const creds = require("./gsheet_api_key.json")
 
 const app = express()
 
@@ -16,12 +18,28 @@ app.use(express.json())
 app.use(cors())
 
 // edit product 
-app.post("/formdata/:section", (req, res) => {
+app.post("/formdata/:section", async (req, res) => {
 
     try {
         const section = req.params.section
 
         const data = req.body;
+
+
+        // updating google sheet 
+        const doc = new GoogleSpreadsheet("1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co")
+        await doc.useServiceAccountAuth(creds);
+        await doc.loadInfo()
+
+        const sheet = doc.sheetsByIndex[0]
+
+        const HEADERS = ['email', 'name', 'phone', 'message', 'business']
+        let dataArray = [
+            {"email": data?.email, "name": data?.name, "phone":data?.phone, "message": data?.message, "business": data?.business}
+        ]
+
+        await sheet.addRows(dataArray)
+
 
         if (section === "indexbig") {
             resend.emails.send({
