@@ -8,34 +8,58 @@ const functions = require('firebase-functions');
 
 const { GoogleSpreadsheet } = require("google-spreadsheet")
 const creds = require("./gsheet_api_key.json")
+const { JWT } = require("google-auth-library")
+const serviceAuth = new JWT({
+    email: creds.client_email,
+    key: creds.private_key,
+    scopes: [
+        "https://www.googleapis.com/auth/spreadsheets"
+    ]
+
+})
 
 const app = express()
-
-//delete this for firebase
-// const port = process.env.PORT || 5000;
-
 app.use(express.json())
 app.use(cors())
+
+// test get for spread sheet update
+app.get("/test/testing-for-google-spreadsheets", async (req, res) => {
+    const data = { email: "hello", name: "antor" }
+    // updating google sheet 
+    const doc = new GoogleSpreadsheet("1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co", serviceAuth)
+    await doc.loadInfo()
+
+    const sheet = doc.sheetsByIndex[0]
+
+    const HEADERS = ['email', 'name', 'phone', 'message', 'business']
+    await sheet.setHeaderRow(HEADERS)
+
+    let dataArray = [
+        { "email": data?.email, "name": data?.name, "phone": data?.phone, "message": data?.message, "business": data?.business }
+    ]
+
+    await sheet.addRows(dataArray)
+    res.json("got the info")
+})
 
 // edit product 
 app.post("/formdata/:section", async (req, res) => {
 
     try {
         const section = req.params.section
-
         const data = req.body;
 
-
         // updating google sheet 
-        const doc = new GoogleSpreadsheet("1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co")
-        await doc.useServiceAccountAuth(creds);
+        const doc = new GoogleSpreadsheet("1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co", serviceAuth)
         await doc.loadInfo()
 
         const sheet = doc.sheetsByIndex[0]
 
         const HEADERS = ['email', 'name', 'phone', 'message', 'business']
+        await sheet.setHeaderRow(HEADERS)
+
         let dataArray = [
-            {"email": data?.email, "name": data?.name, "phone":data?.phone, "message": data?.message, "business": data?.business}
+            { "email": data?.email, "name": data?.name, "phone": data?.phone, "message": data?.message, "business": data?.business }
         ]
 
         await sheet.addRows(dataArray)
@@ -95,6 +119,8 @@ app.post("/formdata/:section", async (req, res) => {
 })
 
 // this part for node.js 
+//delete this for firebase
+// const port = process.env.PORT || 5000;
 // app.listen(port, () => {
 //     console.log("server is runnign on port", port)
 // })
