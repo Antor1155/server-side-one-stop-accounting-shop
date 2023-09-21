@@ -56,7 +56,6 @@ app.post("/formdata/:section", async (req, res) => {
         await doc.loadInfo();
         const sheet = doc.sheetsByIndex[0]
         await sheet.addRow(data)
-        console.log(sheet.title, data)
 
         if (section === "indexbig") {
             resend.emails.send({
