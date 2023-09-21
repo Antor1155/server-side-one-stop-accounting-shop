@@ -12,10 +12,36 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+// google sheet automation process 
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const { JWT } = require('google-auth-library');
+const creds = require("./gsheet_api_key.json")
+
+const jwt  = new JWT({
+    email: creds.client_email,
+    key: creds.private_key,
+    scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive.file',
+      ],
+  });
+
+const spreadsheetId = "1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co"
+
+
 // test get for spread sheet update
 app.get("/test/testing-for-google-spreadsheets", async (req, res) => {
+    const data = { name: "axxxsyksdnf", email: "slfj@dsf.com" }
+    try{
+        const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
+        await doc.loadInfo();
+        const sheet = doc.sheetsByIndex[0]
     
-    res.json(process.env.RESEND_KEY)
+        await sheet.addRow(data)
+    }catch(error){
+        console.log(error)
+    }
+    res.json("spreed sheett update working perfect")
 })
 
 // edit product 
@@ -24,6 +50,13 @@ app.post("/formdata/:section", async (req, res) => {
     try {
         const section = req.params.section
         const data = req.body;
+
+        // updating google speedsheet from the data received
+        const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
+        await doc.loadInfo();
+        const sheet = doc.sheetsByIndex[0]
+        await sheet.addRow(data)
+        console.log(sheet.title, data)
 
         if (section === "indexbig") {
             resend.emails.send({
@@ -72,7 +105,7 @@ app.post("/formdata/:section", async (req, res) => {
 
         }
 
-        res.json("received the data")
+        res.json(data)
 
     } catch (error) {
         console.log("error*** : ", error)
