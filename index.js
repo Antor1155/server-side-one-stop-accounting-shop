@@ -31,7 +31,7 @@ const spreadsheetId = "1h_VVzALC56PPncpRaGy_CGWZeXrUm2ACPZqKB6-a3co"
 
 // test get for spread sheet update
 app.get("/test/testing-for-google-spreadsheets", async (req, res) => {
-    const data = { name: "axxxsyksdnf", email: "slfj@dsf.com" }
+    const data = { name: "axxxsyksdnf", email: "slfj@dsf.com", date: new Date() }
     try{
         const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
         await doc.loadInfo();
@@ -50,6 +50,8 @@ app.post("/formdata/:section", async (req, res) => {
     try {
         const section = req.params.section
         const data = req.body;
+
+        data[date] = new Date()
 
         // updating google speedsheet from the data received
         const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
