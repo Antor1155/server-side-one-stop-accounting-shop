@@ -58,7 +58,12 @@ app.post("/formdata/:section", async (req, res) => {
         // updating google speedsheet from the data received
         const doc = new GoogleSpreadsheet(spreadsheetId, jwt);
         await doc.loadInfo();
-        const sheet = doc.sheetsByIndex[0]
+        let sheet = doc.sheetsByIndex[0]
+
+        if (section === "addon"){
+            sheet = doc.sheetsByIndex[1]
+        }
+        
         await sheet.addRow(data)
 
         if (section === "indexbig") {
@@ -90,7 +95,7 @@ app.post("/formdata/:section", async (req, res) => {
                 res.status(200).json("received")
             }).catch(error => console.log("indexbig***: ", error))
 
-        } else if (section === "cform") {
+        } else if ((section === "cform") || (section === "addon")) {
             resend.emails.send({
                 from: "OSAS email funnel <email@onestopaccountingshop.com>",
                 to: ["Info@onestopaccountingshop.com"],
